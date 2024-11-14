@@ -77,3 +77,21 @@ body {
 .bg-green{
   background-color: green;  
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-inWelcome {
+  animation: fadeIn 2s ease-in-out;
+}
+
+.fade-inContent {
+    animation: fadeIn 2s ease-in-out;
+  animation-delay: 3s;
+}
