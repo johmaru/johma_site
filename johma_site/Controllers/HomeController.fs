@@ -40,7 +40,7 @@ type HomeController (logger : ILogger<HomeController>) =
         cookieOptions.Expires <- DateTimeOffset.UtcNow.AddDays(30.0)
         this.Response.Cookies.Append("Theme", newCookie, cookieOptions)
         this.RedirectToAction("Index")
-        
+    
                   
 
     [<ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)>]
