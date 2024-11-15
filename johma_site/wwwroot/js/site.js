@@ -19,15 +19,24 @@ function typeWriter(element, text, speed,callback) {
 
 document.addEventListener('DOMContentLoaded', function () {
     const element = document.querySelectorAll('.typewriter');
-  element.forEach(function (el) {
+    element.forEach(function (el) {
       const text = el.getAttribute('data-text');
       setTimeout(function () {
           typeWriter(el, text, 80, function (){
               const img = el.querySelector('img');
               if (img) {
                   img.style.display = 'inline';
-                }
+              }
           });
       }, 2000);
     });
+
+    const bodyClass = document.body.className
+    const imgElement = document.getElementById('twitter-logo')
+    if (bodyClass === 'light-mode'){
+        imgElement.src = '/logo-black.png';
+    } else if (bodyClass === 'dark-mode'){ {
+        imgElement.src = '/logo-white.png';
+    }}
+  
 });
