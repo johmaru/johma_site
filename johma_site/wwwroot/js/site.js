@@ -3,22 +3,31 @@
 
 // Write your JavaScript code.
 
-function typeWriter(element, text, speed) {
+function typeWriter(element, text, speed,callback) {
     let i = 0;
   function type(){
       if (i < text.length) {
           element.innerHTML += text.charAt(i);
           i++;
           setTimeout(type, speed);
+      } else if (callback) {
+          callback();
       }
   }
     type();
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const element = document.querySelector('.typewriter');
-    const text = element.getAttribute('data-text');
-   setTimeout(function () {
-        typeWriter(element, text, 100);
-    }, 3000);
+    const element = document.querySelectorAll('.typewriter');
+  element.forEach(function (el) {
+      const text = el.getAttribute('data-text');
+      setTimeout(function () {
+          typeWriter(el, text, 80, function (){
+              const img = el.querySelector('img');
+              if (img) {
+                  img.style.display = 'inline';
+                }
+          });
+      }, 2000);
+    });
 });
