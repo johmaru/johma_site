@@ -1,5 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Profile";
+    var theme = ViewData["Theme"] as string;
+    var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
 }
 <head>
     <title>@ViewData["Title"]</title>
@@ -9,8 +11,8 @@
 <Div class="text-center">
     <h1 class="fade-inWelcome">@ViewData["Title"]</h1>
         
-        <h2 class="TwitterText mt-5 text-twitter typewriter" data-text="X(旧Twitter)">
-            <img src="~/xlogo.svg" alt="" width="30" style="display: none" height="24">
+        <h2 class="mt-5 text-twitter typewriter" data-text="(旧Twitter)">
+            <img id="twitter-logo" src="" alt="" width="24" style="display: none" height="24">
         </h2>
         <a class="Twitter mt-2 text-twitter typewriter" data-text="X(旧Twitter)を開く" href="https://x.com/Johmaru_gamer" target="_blank" role="button"></a>
         <script>
@@ -26,5 +28,6 @@
                 window.open("https://x.com/Johmaru_gamer", "_blank");
             });
         });
-    </script>
+    
+            </script>
 </Div>
