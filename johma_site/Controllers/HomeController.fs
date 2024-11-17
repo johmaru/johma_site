@@ -9,10 +9,11 @@ open System.Diagnostics
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Logging
-
 open johma_site.Models
-
-type HomeController (logger : ILogger<HomeController>) =
+open johma_site
+open DataLibrary
+open Microsoft.EntityFrameworkCore
+type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext) =
     inherit Controller()
 
     member this.Index () =
@@ -32,6 +33,17 @@ type HomeController (logger : ILogger<HomeController>) =
         let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"]  else "Light"
         this.ViewData.["Theme"] <- cookie
         this.View()
+        
+    member this.RegisterOrLogin () =
+        let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"]  else "Light"
+        this.ViewData.["Theme"] <- cookie
+        this.View()
+        
+    member this.Register(name: String,email: String, password: String) =
+      let newUser = User(Name = name, Email = email, Password = password)
+      db.Users.Add(newUser) |> ignore
+      db.SaveChanges() |> ignore
+      this.RedirectToAction("Index")
         
     member this.ThemeChange() =
         let cookie = this.Request.Cookies.["Theme"]
