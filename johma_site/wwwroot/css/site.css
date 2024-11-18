@@ -118,3 +118,32 @@ h2.mt-5.text-twitter.typewriter img {
   top: 50%;
   height: auto;
 }
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  float: left;
+  min-width: 10rem;
+  padding: .5rem 0;
+  margin: .125rem 0 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, .15);
+  border-radius: .25rem;
+  box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .175);
+}
+
+.nav-item.dropdown:hover .dropdown-menu,
+.dropdown-menu:hover {
+  display: block;
+}
+.nav-item.dropdown:hover .dropdown-menu {
+  pointer-events: auto;
+}

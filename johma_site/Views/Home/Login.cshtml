@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Register/Login";
+    ViewData["Title"] = "ログイン";
     var theme = ViewData["Theme"] as string;
     var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
 }
@@ -10,18 +10,11 @@
 </head>
 
 <Div class="text-center">
-    <h2 class="mt-5 fade-inWelcome">
-        登録またはログイン
-    </h2>
-    <p class="fade-inWelcome" このサイトに登録またはログインしてください/>
+    
     <h2 class="mt-3 fade-inWelcome text-decoration-underline">
-        登録
+        ログイン
     </h2>
-    <form method="post" action="/Home/Register/" class="fade-inWelcome">
-        <div class="form-group">
-            <label for="name">名前</label>
-            <input type="text" class="form-control" id="name" name="name" required>
-        </div>
+    <form method="post" action="/Home/LoginAcc" class="fade-inWelcome">
         <div class="form-group">
             <label for="email">メールアドレス</label>
             <input type="email" class="form-control" id="email" name="email" required>
@@ -30,6 +23,7 @@
             <label for="password">パスワード</label>
             <input type="password" class="form-control" id="password" name="password" required>
         </div>
+        <a class="mt-3" href="/Home/Register">アカウントの作成</a>
         <button type="submit" class="btn btn-primary mt-3">ログイン</button>
     </form>
 </Div>

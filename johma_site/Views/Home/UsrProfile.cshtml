@@ -1,0 +1,19 @@
+﻿@model DataLibrary.User
+
+@{
+    ViewData["Title"] = "ユーザープロフィール";
+    var theme = ViewData["Theme"] as string;
+    var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
+}
+<head>
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css"/>
+</head>
+
+<body class="@bodyClass">
+<div>
+    <h2>ユーザープロフィール</h2>
+    <p>ユーザー名: @Model.Name</p>
+    <p>メールアドレス: @Model.Email</p>
+</div>
+</body>

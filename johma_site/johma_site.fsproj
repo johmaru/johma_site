@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\Home\Register\" />
+      <Folder Include="wwwroot\Home\RegisterAcc\" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Design;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
 namespace DataLibrary;
@@ -11,6 +12,9 @@ using Microsoft.EntityFrameworkCore;
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        
+        [NotMapped]
+        public string PasswordConfirm { get; set; }
     }
 
 
@@ -32,15 +36,6 @@ using Microsoft.EntityFrameworkCore;
     }
     public class ApplicationDbContext : DbContext
     {
-        
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
-        }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

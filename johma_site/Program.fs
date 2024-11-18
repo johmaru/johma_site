@@ -8,8 +8,12 @@ open System.IO
 open System.Linq
 open System.Threading.Tasks
 open Microsoft.AspNetCore
+open Microsoft.AspNetCore.Authentication
+open Microsoft.AspNetCore.Authentication.Cookies
 open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.DataProtection
 open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.HttpsPolicy
 open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Configuration
@@ -31,6 +35,17 @@ module Program =
     [<EntryPoint>]
     let main args =
         let builder = WebApplication.CreateBuilder(args)
+        
+        builder.Services.AddDataProtection()
+                .SetApplicationName("johma_site")
+                |> ignore
+                
+        builder.Services.ConfigureApplicationCookie(fun options ->
+            options.Cookie.HttpOnly <- true
+            options.Cookie.SecurePolicy <- CookieSecurePolicy.Always
+            options.ExpireTimeSpan <- TimeSpan.FromDays(30.0)
+            options.SlidingExpiration <- true
+            ) |> ignore
  
        // 構成の設定
         builder.Configuration
@@ -44,7 +59,18 @@ module Program =
                 builder.Configuration.GetConnectionString("DefaultConnection")
             ) |> ignore
         ) |> ignore
+        
+        builder.Services.AddAuthentication(fun (options: AuthenticationOptions) -> 
+            options.DefaultScheme <- CookieAuthenticationDefaults.AuthenticationScheme
+            options.DefaultChallengeScheme <- CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(fun options ->
+            options.ExpireTimeSpan <- TimeSpan.FromMinutes(30.0)
+            options.SlidingExpiration <- true
+            options.AccessDeniedPath <- PathString("/Home/Login")
+            options.LoginPath <- PathString("/Home/Login")) |> ignore
     
+        builder.Services.AddSession() |> ignore
+        
         builder.Services.AddControllers() |> ignore
         builder
             .Services
@@ -63,7 +89,10 @@ module Program =
 
         app.UseStaticFiles()
         app.UseRouting()
+        app.UseAuthentication()
         app.UseAuthorization()
+        
+        app.UseSession() |> ignore
 
         app.MapControllerRoute(name = "default", pattern = "{controller=Home}/{action=Index}/{id?}")
 
