@@ -147,3 +147,7 @@ h2.mt-5.text-twitter.typewriter img {
 .nav-item.dropdown:hover .dropdown-menu {
   pointer-events: auto;
 }
+
+.nav-item:hover {
+  background-color: darkgreen;
+}

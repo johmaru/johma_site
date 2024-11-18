@@ -1,0 +1,61 @@
+﻿@using System.Security.Claims
+@model IEnumerable<DataLibrary.User>
+
+@{
+    ViewData["Title"] = "管理ページ";
+    var theme = ViewData["Theme"] as string;
+    var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
+    var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var currentUser = Model.FirstOrDefault(u => u.Id == int.Parse(currentUserId ?? "0"));
+}
+<head>
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css"/>
+</head>
+
+<style>
+    
+    .table {
+        color: darkred;
+    }
+    
+   .table td {
+       color: darkred;
+   }
+</style>
+
+<body class="@bodyClass">
+@if (currentUser?.Role == "Admin")
+{
+<div class="container text-center">
+    <h2>全ユーザー</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ユーザーID</th>
+            <th>ユーザー名</th>
+            <th>メールアドレス</th>
+            <th>ロール</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+        <tr>
+            <td>@user.Id</td>
+            <td>@user.Name</td>
+            <td>@user.Email</td>
+            <td>@user.Role</td>
+        </tr>
+        }
+        </tbody>
+    </table>
+</div>
+}
+else
+{
+<div class="alert alert-danger">
+    管理者権限がありません
+</div>
+}
+</body>

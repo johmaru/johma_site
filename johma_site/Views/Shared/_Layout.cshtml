@@ -1,7 +1,13 @@
-﻿@{
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<DataLibrary.User>
+
+@{
     var theme = ViewData["Theme"] as string;
     var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
-    var isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
+    var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var currentUser = Model?.FirstOrDefault(u => 
+        u.Id == (currentUserId != null ? int.Parse(currentUserId) : 0));
 }
 
 <!DOCTYPE html>
@@ -52,6 +58,10 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
                             <a class="dropdown-item" href="@Url.Action("UsrProfile", "Home")">プロフィール</a>
+                            @if (User.Identity != null && User.Identity.IsAuthenticated || currentUser?.Role == "Admin")
+                            {
+                                <a class="dropdown-item" href="@Url.Action("AdminControl", "Home")">管理ページ</a>
+                            }
                             <a class="dropdown-item" href="@Url.Action("Logout", "Home")">ログアウト</a>
                         </div>
                     </li>

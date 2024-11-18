@@ -18,7 +18,6 @@ open DataLibrary
 open Microsoft.EntityFrameworkCore
 type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext) =
     inherit Controller()
-
     member this.Index () =
         let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"] 
         
@@ -28,10 +27,13 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
                                 cookieOptions.Expires <- DateTimeOffset.UtcNow.AddDays(30.0)
                                 this.Response.Cookies.Append("Theme", newCookie, cookieOptions)
                                 newCookie
-                              
-        this.ViewData.["Theme"] <- cookie
-        this.View()
-
+        this.ViewData.["Theme"] <- cookie                        
+        let users = db.Users.ToList()
+        if users = null then
+           this.View(new List<User>())
+         else
+        this.View(users)                      
+         
     member this.Profile () =
         let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"]  else "Light"
         this.ViewData.["Theme"] <- cookie
@@ -41,6 +43,15 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
         let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"]  else "Light"
         this.ViewData.["Theme"] <- cookie
         this.View()
+    
+    member this.AdminControl() =
+       let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"] else "Light"
+       this.ViewData.["Theme"] <- cookie
+       let users = db.Users.ToList()
+       if users = null then
+        this.View(new List<User>()) :> ActionResult
+       else
+        this.View(users) :> ActionResult
         
     member this.UsrProfile() =
         let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"]  else "Light"
@@ -52,10 +63,12 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
         else
             let userId = userIdCalaim.Value
             let user = db.Users.FirstOrDefault(fun x -> x.Id = int userId)
+            
             if isNull user then
                 this.RedirectToAction("Login") :> ActionResult
             else
-                this.View(user) :> ActionResult
+                let users = [user] |> List.toSeq
+                this.View(users) :> ActionResult
                 
     member this.Logout() =
         async {
@@ -87,7 +100,7 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
           this.ViewData.["Theme"] <- cookie
           this.View("Register") :> ActionResult
       else
-        let newUser = User(Name = name, Email = email, Password = trimmedPassword)
+        let newUser = User(Name = name, Email = email, Password = trimmedPassword,Role = "User")
         db.Users.Add(newUser) |> ignore
         db.SaveChanges() |> ignore
         this.RedirectToAction("Login") :> ActionResult
