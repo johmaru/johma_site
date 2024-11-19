@@ -89,16 +89,15 @@ module Program =
         
         use scope = app.Services.CreateScope()
         let db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>()
-        
-        let users = db.Users.ToList()
-        for user in users do
-             user.Role <- "User"
-             
-             
+        if not (db.Users.Any(fun u -> u.Role <> null)) then
+             let users = db.Users.ToList()
+             for user in users do
+               user.Role <- "User"
+
         let adminUser = db.Users.Find(1)
         if not (isNull adminUser) then
-            adminUser.Role <- "Admin"
-        db.SaveChanges() |> ignore
+          adminUser.Role <- "Admin"
+          db.SaveChanges() |> ignore
 
         if not (builder.Environment.IsDevelopment()) then
             app.UseExceptionHandler("/Home/Error")

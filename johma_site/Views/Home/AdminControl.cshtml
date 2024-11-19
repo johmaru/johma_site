@@ -6,7 +6,9 @@
     var theme = ViewData["Theme"] as string;
     var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
     var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    var currentUser = Model.FirstOrDefault(u => u.Id == int.Parse(currentUserId ?? "0"));
+    var currentUser = (Model != null && currentUserId != null) 
+        ? Model.FirstOrDefault(u => u.Id == int.Parse(currentUserId)) 
+        : null;
 }
 <head>
     <title>@ViewData["Title"]</title>
@@ -27,35 +29,86 @@
 <body class="@bodyClass">
 @if (currentUser?.Role == "Admin")
 {
-<div class="container text-center">
-    <h2>全ユーザー</h2>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>ユーザーID</th>
-            <th>ユーザー名</th>
-            <th>メールアドレス</th>
-            <th>ロール</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var user in Model)
-        {
-        <tr>
-            <td>@user.Id</td>
-            <td>@user.Name</td>
-            <td>@user.Email</td>
-            <td>@user.Role</td>
-        </tr>
-        }
-        </tbody>
-    </table>
-</div>
+    <div class="container text-center">
+        <h2>全ユーザー</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ユーザーID</th>
+                <th>ユーザー名</th>
+                <th>メールアドレス</th>
+                <th>ロール</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.Name</td>
+                    <td>@user.Email</td>
+                    <td>@user.Role</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <h2>データ変更</h2>
+    </div>
+    <div class="container text-center">
+        <form method="post" action="/Home/UpdateData">
+            <div class="form-group">
+                <label for="userId">ユーザーID</label>
+                <input type="number" class="form-control" id="userId" name="userId" required>
+            </div>
+            <div class="form-group">
+                <select id="comboBox" name="comboBox">
+                    <option value="Name">ユーザー名</option>
+                    <option value="Email">メールアドレス</option>
+                    <option value="Role">ロール</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="updateData">変更後のデータ</label>
+                <input type="text" class="form-control" id="updateDataInput" name="updateData" required>
+                <select class="form-control" id="updateDataSelect" name="updateDataSelect" style="display: none;">
+                    <option value="User">User</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">変更</button>
+        </form>
+    </div>
 }
 else
 {
-<div class="alert alert-danger">
-    管理者権限がありません
-</div>
+    <div class="alert alert-danger">
+        管理者権限がありません
+    </div>
 }
 </body>
+
+<script>
+    document.getElementById('comboBox').addEventListener('change', function () {
+        var updateDataInput = document.getElementById('updateDataInput');
+        var updateDataSelect = document.getElementById('updateDataSelect');
+        if (this.value === 'Role') {
+            updateDataInput.style.display = 'none';
+            updateDataInput.removeAttribute('required');
+            updateDataInput.value = ''; 
+            updateDataSelect.style.display = 'block';
+            updateDataSelect.setAttribute('required', 'required');
+
+            updateDataInput.value = updateDataSelect.value;
+        } else {
+            updateDataInput.style.display = 'block';
+            updateDataInput.setAttribute('required', 'required');
+            updateDataSelect.style.display = 'none';
+            updateDataSelect.removeAttribute('required');
+        }
+    });
+
+    
+    document.getElementById('updateDataSelect').addEventListener('change', function() {
+        document.getElementById('updateDataInput').value = this.value;
+    });
+</script>

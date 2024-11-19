@@ -18,6 +18,12 @@ open DataLibrary
 open Microsoft.EntityFrameworkCore
 type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext) =
     inherit Controller()
+    
+    
+    let ThemeApply(controller: HomeController) =
+         let cookie = if controller.Request.Cookies.ContainsKey("Theme") then controller.Request.Cookies.["Theme"]  else "Light"
+         controller.ViewData.["Theme"] <- cookie
+        
     member this.Index () =
         let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"] 
         
@@ -35,27 +41,53 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
         this.View(users)                      
          
     member this.Profile () =
-        let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"]  else "Light"
-        this.ViewData.["Theme"] <- cookie
+        ThemeApply(this)
         this.View()
         
     member this.Register () =
-        let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"]  else "Light"
-        this.ViewData.["Theme"] <- cookie
+        ThemeApply(this)
         this.View()
     
     member this.AdminControl() =
-       let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"] else "Light"
-       this.ViewData.["Theme"] <- cookie
+       ThemeApply(this)
        let users = db.Users.ToList()
-       if users = null then
-        this.View(new List<User>()) :> ActionResult
-       else
-        this.View(users) :> ActionResult
+       let safeUsers = 
+            if isNull users then 
+                new List<User>() 
+            else 
+                users
+       this.View(safeUsers) :> ActionResult
+        
+        
+     member this.UpdateData(userId:int,comboBox: string,updateData:string) : ActionResult =
+         let user = db.Users.FirstOrDefault(fun x -> x.Id = userId)
+         let mutable hasError = false
+         if isNull user then
+          this.ModelState.AddModelError("UserId", "ユーザーが見つかりません")
+          ThemeApply(this)
+          let user = db.Users.ToList()
+          this.View("AdminControl",user) :> ActionResult
+        else
+        match comboBox with
+        | "Name" -> user.Name <- updateData
+        | "Email" -> user.Email <- updateData
+        | "Role" ->
+            if String.IsNullOrWhiteSpace(updateData) then
+                  this.ModelState.AddModelError("Role", "ロールを入力してください")
+                  hasError <- true
+            else
+                  user.Role <- updateData
+        | _ -> ()
+        if hasError then
+            ThemeApply(this)
+            let user = db.Users.ToList()
+            this.View("AdminControl",user) :> ActionResult
+        else
+            db.SaveChanges() |> ignore
+            this.RedirectToAction("AdminControl") :> ActionResult
         
     member this.UsrProfile() =
-        let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"]  else "Light"
-        this.ViewData.["Theme"] <- cookie
+        ThemeApply(this)
         
         let userIdCalaim = this.User.FindFirst(ClaimTypes.NameIdentifier)
         if isNull userIdCalaim then
@@ -96,8 +128,7 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
         hasError <- true
 
       if hasError then
-          let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"] else "Light"
-          this.ViewData.["Theme"] <- cookie
+          ThemeApply(this)
           this.View("Register") :> ActionResult
       else
         let newUser = User(Name = name, Email = email, Password = trimmedPassword,Role = "User")
@@ -111,14 +142,12 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
         let existUser = db.Users.FirstOrDefault(fun x -> x.Email = email)
         if isNull existUser then
             this.ModelState.AddModelError("Email", "このメールアドレスは登録されていません")
-            let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"] else "Light"
-            this.ViewData.["Theme"] <- cookie
+            ThemeApply(this)
             this.View("Login") :> ActionResult
         else
             if existUser.Password <> trimmedPassword then
                 this.ModelState.AddModelError("Password", "パスワードが違います")
-                let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"] else "Light"
-                this.ViewData.["Theme"] <- cookie
+                ThemeApply(this)
                 this.View("Login") :> ActionResult
             else
                let claims = [Claim(ClaimTypes.NameIdentifier, existUser.Id.ToString())]
@@ -129,8 +158,7 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
                this.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, ClaimsPrincipal(claimsIdentity), authProperties) |> ignore
                this.RedirectToAction("Index") :> ActionResult
     member this.Login()=
-        let cookie = if this.Request.Cookies.ContainsKey("Theme") then this.Request.Cookies.["Theme"]  else "Light"
-        this.ViewData.["Theme"] <- cookie
+        ThemeApply(this)
         this.View()
         
     member this.ThemeChange() =
