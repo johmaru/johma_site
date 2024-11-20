@@ -8,11 +8,12 @@
 
 <body class="@bodyClass">
 <div class="container">
-    <h2>@Model.Title</h2>
-    <p>@Html.Encode(Model.Content)</p>
+    <h2 class="text-decoration-underline">@Model.Title</h2>
     @if(!string.IsNullOrEmpty(Model.ImagePath))
     {
-        <img src="@Model.ImagePath" alt="Blog Image" style="width: 100px; height: 100px"/>
+    <img src="@Model.ImagePath" alt="Blog Image" style="width: 100px; height: 100px"/>
     }
+    <p>@Html.Raw(Model.Content)</p>
+   
 </div>
 </body>

@@ -8,6 +8,7 @@ open System.Security.Claims
 open System.Threading.Tasks
 open System.Diagnostics
 
+open Ganss.Xss
 open Microsoft.AspNetCore.Authentication
 open Microsoft.AspNetCore.Authentication.Cookies
 open Microsoft.AspNetCore.Http
@@ -80,7 +81,8 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
         this.View(blogs)
         
     member this.CreateBlog(id: int) : ActionResult =
-        let blog = db.Blogs.FirstOrDefault(fun x -> x.Id = id)
+        let blogID = this.TempData.["BlogID"] :?> int
+        let blog = db.Blogs.FirstOrDefault(fun x -> x.Id = blogID)
         let blogModel =
             if isNull blog then
                 Blog()
@@ -88,7 +90,7 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
                 blog    
         ThemeApply(this)
         let users = db.Users.ToList()
-        let model = blogUserViewModel(Blog = Blog(), Users = users)
+        let model = blogUserViewModel(Blog = blogModel, Users = users)
         this.View(model)
         
     member this.DeleteBlog(id: int) : ActionResult =
@@ -111,7 +113,8 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
                 existingBlog.ImagePath <- imagePath
                 existingBlog.Date <- date
                 db.SaveChanges() |> ignore
-                this.RedirectToAction("CreateBlog", {| id = existingBlog.Id |}) :> ActionResult
+                this.TempData.["BlogID"] <- existingBlog.Id
+                this.RedirectToAction("CreateBlog") :> ActionResult
             
     member this.EditBlogContent(model: blogUserViewModel,image: IFormFile) : ActionResult =
         if this.ModelState.IsValid then
@@ -141,6 +144,8 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
         if isNull blog then
             this.RedirectToAction("Blog") :> ActionResult
         else
+            let sanitizer = HtmlSanitizer()
+            blog.Content <- sanitizer.Sanitize(blog.Content)
             ThemeApply(this)
             this.View(blog) :> ActionResult
         

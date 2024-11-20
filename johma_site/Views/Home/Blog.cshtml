@@ -12,6 +12,10 @@
     .table th {
         color: green;
     }
+    
+    .table td {
+        color: blue;
+    }
 </style>
 
 <body class="@bodyClass">
@@ -27,7 +31,11 @@
                 <th>タイトル</th>
                 <th>内容</th>
                 <th>画像</th>
-                <th>削除</th>
+                @if(role == "Admin")
+                {
+                    <th>編集</th>
+                    <th>削除</th>
+                }
             </tr>
             </thead>
             <tbody>
@@ -36,15 +44,9 @@
                 <tr>
                     <td><a href="/Home/BlogDetails/@blog.Id">@blog.Title</a></td>
                     <td>@blog.Content</td>
-                    <td><img src="@blog.ImagePath" alt="Blog Image" style="width: 100px; height: 100px;"/></td>
+                    <td><img src="@blog.ImagePath" alt="Blog Image" style="width: 50px; height: 50px;"/></td>
                     @if(role == "Admin")
                     {
-                        <td>
-                            <form method="post" action="/Home/DeleteBlog">
-                                <input type="hidden" name="id" value="@blog.Id"/>
-                                <button type="submit" class="btn btn-danger">削除</button>
-                            </form>
-                        </td>
                         <td>
                             <form method="post" action="/Home/EditBlog">
                                 <input type="hidden" name="id" value="@blog.Id"/>
@@ -53,7 +55,14 @@
                                 <input type="hidden" name="author" value="@blog.Author"/>
                                 <input type="hidden" name="imagePath" value="@blog.ImagePath"/>
                                 <input type="hidden" name="date" value="@blog.Date"/>
-                                <button type="submit" class="btn btn-danger">編集</button>
+                                <button type="submit" class="btn btn-warning">編集</button>
+                            </form>
+                        </td>
+                        
+                        <td>
+                            <form method="post" action="/Home/DeleteBlog">
+                                <input type="hidden" name="id" value="@blog.Id"/>
+                                <button type="submit" class="btn btn-danger">削除</button>
                             </form>
                         </td>
                     }
