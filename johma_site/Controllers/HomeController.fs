@@ -2,6 +2,7 @@
 
 open System
 open System.Collections.Generic
+open System.IO
 open System.Linq
 open System.Security.Claims
 open System.Threading.Tasks
@@ -12,10 +13,15 @@ open Microsoft.AspNetCore.Authentication.Cookies
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Logging
+open Microsoft.FSharp.Core
 open johma_site.Models
 open johma_site
 open DataLibrary
 open Microsoft.EntityFrameworkCore
+
+type blogUserViewModel() =
+    member val Blog = Blog() with get, set
+    member val Users = List<User>() with get, set
 type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext) =
     inherit Controller()
     
@@ -57,6 +63,99 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
             else 
                 users
        this.View(safeUsers) :> ActionResult
+       
+       
+    member this.Blog() =
+        ThemeApply(this)
+        let blogs = db.Blogs.ToList()
+        let userRole = 
+            if not (isNull this.User) then
+                this.User.Claims
+                    .FirstOrDefault(fun c -> c.Type = "Role")
+                    |> Option.ofObj
+                    |> Option.map (fun c -> c.Value)
+                    |> Option.defaultValue ""
+            else ""
+        this.ViewData.["UserRole"] <- userRole
+        this.View(blogs)
+        
+    member this.CreateBlog(id: int) : ActionResult =
+        let blog = db.Blogs.FirstOrDefault(fun x -> x.Id = id)
+        let blogModel =
+            if isNull blog then
+                Blog()
+            else 
+                blog    
+        ThemeApply(this)
+        let users = db.Users.ToList()
+        let model = blogUserViewModel(Blog = Blog(), Users = users)
+        this.View(model)
+        
+    member this.DeleteBlog(id: int) : ActionResult =
+        let blog = db.Blogs.FirstOrDefault(fun x -> x.Id = id)
+        if isNull blog then
+                this.RedirectToAction("Blog") :> ActionResult
+        else
+            db.Blogs.Remove(blog) |> ignore
+            db.SaveChanges() |> ignore
+            this.RedirectToAction("Blog") :> ActionResult
+            
+    member this.EditBlog(id: int, title: string, content: string, author: string, imagePath: string, date: DateTime) : ActionResult =
+        let existingBlog = db.Blogs.FirstOrDefault(fun x -> x.Id = id)
+        if isNull existingBlog then
+            this.RedirectToAction("Blog") :> ActionResult
+        else
+                existingBlog.Title <- title
+                existingBlog.Content <- content
+                existingBlog.Author <- author
+                existingBlog.ImagePath <- imagePath
+                existingBlog.Date <- date
+                db.SaveChanges() |> ignore
+                this.RedirectToAction("CreateBlog", {| id = existingBlog.Id |}) :> ActionResult
+            
+    member this.EditBlogContent(model: blogUserViewModel,image: IFormFile) : ActionResult =
+        if this.ModelState.IsValid then
+            let imagePath = Path.Combine("wwwroot/images", image.FileName)
+            use stream = new FileStream(imagePath, FileMode.Create)
+            image.CopyTo(stream)
+            model.Blog.ImagePath <- "/images/" + image.FileName
+            db.Blogs.Update(model.Blog) |> ignore
+            db.SaveChanges() |> ignore
+            this.RedirectToAction("Blog") :> ActionResult
+        else
+            ThemeApply(this)
+            this.View(model) :> ActionResult
+            
+    member this.AddImage(image: IFormFile): ActionResult=
+          if this.ModelState.IsValid then
+            let imagePath = Path.Combine("wwwroot/images", image.FileName)
+            use stream = new FileStream(imagePath, FileMode.Create)
+            image.CopyTo(stream)
+            this.RedirectToAction("SuccessView") :> ActionResult
+          else
+               this.ModelState.AddModelError("Image", "画像を選択してください")
+               this.View("ErrorView") :> ActionResult
+        
+    member this.BlogDetails(id: int) : ActionResult =
+        let blog = db.Blogs.FirstOrDefault(fun x -> x.Id = id)
+        if isNull blog then
+            this.RedirectToAction("Blog") :> ActionResult
+        else
+            ThemeApply(this)
+            this.View(blog) :> ActionResult
+        
+    member this.CreateBlogContent(model: blogUserViewModel,image: IFormFile) : ActionResult =
+        if this.ModelState.IsValid then
+            let imagePath = Path.Combine("wwwroot/images", image.FileName)
+            use stream = new FileStream(imagePath, FileMode.Create)
+            image.CopyTo(stream)
+            model.Blog.ImagePath <- "/images/" + image.FileName
+            db.Blogs.Add(model.Blog) |> ignore
+            db.SaveChanges() |> ignore
+            this.RedirectToAction("Blog") :> ActionResult
+        else
+            ThemeApply(this)
+            this.View(model) :> ActionResult
         
         
      member this.UpdateData(userId:int,comboBox: string,updateData:string) : ActionResult =
@@ -150,7 +249,12 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
                 ThemeApply(this)
                 this.View("Login") :> ActionResult
             else
-               let claims = [Claim(ClaimTypes.NameIdentifier, existUser.Id.ToString())]
+               let claims = [
+                   Claim(ClaimTypes.Name, existUser.Email)
+                   Claim(ClaimTypes.NameIdentifier, existUser.Id.ToString())
+                   Claim(ClaimTypes.Role, existUser.Role)
+                   Claim("Role", existUser.Role) 
+                  ]
                let claimsIdentity = ClaimsIdentity(claims,CookieAuthenticationDefaults.AuthenticationScheme)
                let authProperties = AuthenticationProperties()
                authProperties.IsPersistent <- true

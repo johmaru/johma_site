@@ -1,0 +1,18 @@
+﻿@model DataLibrary.Blog
+
+@{
+    ViewData["Title"] = "ブログ詳細";
+    var theme = ViewData["Theme"] as string;
+    var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
+}
+
+<body class="@bodyClass">
+<div class="container">
+    <h2>@Model.Title</h2>
+    <p>@Html.Encode(Model.Content)</p>
+    @if(!string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <img src="@Model.ImagePath" alt="Blog Image" style="width: 100px; height: 100px"/>
+    }
+</div>
+</body>

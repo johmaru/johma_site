@@ -1,0 +1,70 @@
+﻿@using System.Security.Claims
+@model  johma_site.Controllers.blogUserViewModel
+
+@{
+    ViewData["Title"] = "Create Blog";
+    var theme = ViewData["Theme"] as string;
+    var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
+    var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var currentUser = (Model != null && currentUserId != null) 
+        ? Model.Users.FirstOrDefault(u => u.Id == int.Parse(currentUserId)) 
+        : null;
+}
+
+<style>
+    .auto-resize {
+        overflow: hidden;
+        resize: none;
+    }
+</style>
+
+<body class="@bodyClass">
+@if (currentUser?.Role == "Admin")
+{
+    <div class="container text-center">
+        <h2>ブログ作成</h2>
+        <form asp-action="CreateBlogContent" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label asp-for="Blog.Title" class="control-label"></label>
+                <input asp-for="Blog.Title" class="form-control"/>
+                <span asp-validation-for="Blog.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Blog.Content" class="control-label"></label>
+                <textarea asp-for="Blog.Content" class="form-control auto-resize"></textarea>
+                <span asp-validation-for="Blog.Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Blog.Author" class="control-label"></label>
+                <input asp-for="Blog.Author" class="form-control"/>
+                <span asp-validation-for="Blog.Author" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Image" class="control-label">Image</label>
+                <input type="file" name="image" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+}
+else
+{
+    <div class="container text-center">
+        <h2>管理者権限が必要です</h2>
+    </div>
+}
+</body>
+
+<script>
+     document.addEventListener('DOMContentLoaded', function() {
+        var textareas = document.querySelectorAll('.auto-resize');
+        textareas.forEach(function (textarea) {
+            textarea.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        });
+    });
+</script>

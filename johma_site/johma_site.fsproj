@@ -9,6 +9,7 @@
 		<Folder Include="Data\" />
         <Compile Include="Controllers/HomeController.fs"/>
         <Compile Include="Program.fs"/>
+        <Folder Include="wwwroot\images\" />
         <ProjectReference Include="..\DataLibrary\DataLibrary.csproj" />
     </ItemGroup>
 

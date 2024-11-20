@@ -39,6 +39,38 @@ public class User : IEnumerable
     }
 }
 
+public class Blog : IEnumerable
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string Content { get; set; }
+    public string ImagePath { get; set; }
+    public string Author { get; set; }
+    public DateTime Date { get; set; }
+    
+    private object[] GetProperties()
+    {
+        return new object[]
+        {
+            Id,
+            Title,
+            Content,
+            ImagePath,
+            Author,
+            Date
+        };
+    }
+    
+    public IEnumerator GetEnumerator()
+    {
+        return GetProperties().GetEnumerator();
+    }
+    
+    public string[] GetPropertyNames()
+    {
+        return new[] { "Id", "Title", "Content", "ImagePath", "Author", "Date" };
+    }
+}
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
         public ApplicationDbContext CreateDbContext(string[] args)
@@ -80,4 +112,5 @@ public class User : IEnumerable
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
     }

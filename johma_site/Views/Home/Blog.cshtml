@@ -1,0 +1,65 @@
+﻿
+@model IEnumerable<DataLibrary.Blog>
+
+@{
+    ViewData["Title"] = "ブログ一覧";
+    var theme = ViewData["Theme"] as string;
+    var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
+    var role = ViewData["UserRole"] as string;
+}
+
+<style>
+    .table th {
+        color: green;
+    }
+</style>
+
+<body class="@bodyClass">
+    <div class="container text-center">
+        <h2>ブログ一覧</h2>
+        @if(role == "Admin")
+        {
+            <a href="/Home/CreateBlog" class="btn btn-primary">ブログを作成</a>
+        }
+        <table class="table">
+            <thead>
+            <tr>
+                <th>タイトル</th>
+                <th>内容</th>
+                <th>画像</th>
+                <th>削除</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var blog in Model)
+            {
+                <tr>
+                    <td><a href="/Home/BlogDetails/@blog.Id">@blog.Title</a></td>
+                    <td>@blog.Content</td>
+                    <td><img src="@blog.ImagePath" alt="Blog Image" style="width: 100px; height: 100px;"/></td>
+                    @if(role == "Admin")
+                    {
+                        <td>
+                            <form method="post" action="/Home/DeleteBlog">
+                                <input type="hidden" name="id" value="@blog.Id"/>
+                                <button type="submit" class="btn btn-danger">削除</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="post" action="/Home/EditBlog">
+                                <input type="hidden" name="id" value="@blog.Id"/>
+                                <input type="hidden" name="title" value="@blog.Title"/>
+                                <input type="hidden" name="content" value="@blog.Content"/>
+                                <input type="hidden" name="author" value="@blog.Author"/>
+                                <input type="hidden" name="imagePath" value="@blog.ImagePath"/>
+                                <input type="hidden" name="date" value="@blog.Date"/>
+                                <button type="submit" class="btn btn-danger">編集</button>
+                            </form>
+                        </td>
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</body>
