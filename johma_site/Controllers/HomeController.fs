@@ -4,7 +4,9 @@ open System
 open System.Collections.Generic
 open System.IO
 open System.Linq
+open System.Runtime.CompilerServices
 open System.Security.Claims
+open System.Text.RegularExpressions
 open System.Threading.Tasks
 open System.Diagnostics
 
@@ -80,17 +82,17 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
         this.ViewData.["UserRole"] <- userRole
         this.View(blogs)
         
-    member this.CreateBlog(id: int) : ActionResult =
-        let blogID = this.TempData.["BlogID"] :?> int
-        let blog = db.Blogs.FirstOrDefault(fun x -> x.Id = blogID)
+    member this.CreateBlog(id: int,edit: bool) : ActionResult =
+        let blogID = id
         let blogModel =
-            if isNull blog then
+            if edit then
+                db.Blogs.FirstOrDefault(fun x -> x.Id = blogID)
+            else
                 Blog()
-            else 
-                blog    
         ThemeApply(this)
         let users = db.Users.ToList()
         let model = blogUserViewModel(Blog = blogModel, Users = users)
+        this.ViewData.["IsEdit"] <- edit
         this.View(model)
         
     member this.DeleteBlog(id: int) : ActionResult =
@@ -114,20 +116,26 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
                 existingBlog.Date <- date
                 db.SaveChanges() |> ignore
                 this.TempData.["BlogID"] <- existingBlog.Id
-                this.RedirectToAction("CreateBlog") :> ActionResult
+                this.RedirectToAction("CreateBlog", {|id = existingBlog.Id; edit = true|}) :> ActionResult
             
     member this.EditBlogContent(model: blogUserViewModel,image: IFormFile) : ActionResult =
+        let mutable imagePath = ""
         if this.ModelState.IsValid then
-            let imagePath = Path.Combine("wwwroot/images", image.FileName)
-            use stream = new FileStream(imagePath, FileMode.Create)
-            image.CopyTo(stream)
-            model.Blog.ImagePath <- "/images/" + image.FileName
-            db.Blogs.Update(model.Blog) |> ignore
-            db.SaveChanges() |> ignore
-            this.RedirectToAction("Blog") :> ActionResult
+                if (String.IsNullOrWhiteSpace(model.Blog.ImagePath)) then
+                    imagePath <- Path.Combine("wwwroot/logo-black.png")                
+                else
+                    imagePath <- Path.Combine("wwwroot/images", image.FileName)
+                
+                use stream = new FileStream(imagePath, FileMode.Create)   
+                if not (String.IsNullOrWhiteSpace(model.Blog.ImagePath)) then
+                     image.CopyTo(stream)
+                model.Blog.ImagePath <- imagePath
+                db.Blogs.Update(model.Blog) |> ignore
+                db.SaveChanges() |> ignore
+                this.RedirectToAction("Blog") :> ActionResult
         else
-            ThemeApply(this)
-            this.View(model) :> ActionResult
+           ThemeApply(this)
+           this.View(model) :> ActionResult
             
     member this.AddImage(image: IFormFile): ActionResult=
           if this.ModelState.IsValid then
@@ -150,17 +158,23 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
             this.View(blog) :> ActionResult
         
     member this.CreateBlogContent(model: blogUserViewModel,image: IFormFile) : ActionResult =
+        let mutable imagePath = ""
         if this.ModelState.IsValid then
-            let imagePath = Path.Combine("wwwroot/images", image.FileName)
-            use stream = new FileStream(imagePath, FileMode.Create)
-            image.CopyTo(stream)
-            model.Blog.ImagePath <- "/images/" + image.FileName
-            db.Blogs.Add(model.Blog) |> ignore
-            db.SaveChanges() |> ignore
-            this.RedirectToAction("Blog") :> ActionResult
+                if (String.IsNullOrWhiteSpace(model.Blog.ImagePath)) then
+                    imagePath <- Path.Combine("wwwroot/logo-black.png")                
+                else
+                    imagePath <- Path.Combine("wwwroot/images", image.FileName)
+                
+                use stream = new FileStream(imagePath, FileMode.Create)   
+                if not (String.IsNullOrWhiteSpace(model.Blog.ImagePath)) then
+                     image.CopyTo(stream)
+                model.Blog.ImagePath <- imagePath
+                db.Blogs.Update(model.Blog) |> ignore
+                db.SaveChanges() |> ignore
+                this.RedirectToAction("Blog") :> ActionResult
         else
-            ThemeApply(this)
-            this.View(model) :> ActionResult
+           ThemeApply(this)
+           this.View(model) :> ActionResult
         
         
      member this.UpdateData(userId:int,comboBox: string,updateData:string) : ActionResult =

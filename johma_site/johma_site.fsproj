@@ -8,6 +8,8 @@
         <Compile Include="Models/ErrorViewModel.fs"/>
 		<Folder Include="Data\" />
         <Compile Include="Controllers/HomeController.fs"/>
+        <Folder Include="wwwroot\Home\RegisterAcc\" />
+        <Compile Include="Extension\AddExtension.fs" />
         <Compile Include="Program.fs"/>
         <Folder Include="wwwroot\images\" />
         <ProjectReference Include="..\DataLibrary\DataLibrary.csproj" />
@@ -22,10 +24,6 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="wwwroot\Home\RegisterAcc\" />
     </ItemGroup>
 
     <ItemGroup>

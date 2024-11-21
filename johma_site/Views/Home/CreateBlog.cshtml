@@ -9,6 +9,9 @@
     var currentUser = (Model != null && currentUserId != null) 
         ? Model.Users.FirstOrDefault(u => u.Id == int.Parse(currentUserId)) 
         : null;
+    var isEdit = ViewData["IsEdit"] as bool? ?? false;
+    var formAction = isEdit ? "EditBlogContent" : "CreateBlogContent";
+    var buttonText = isEdit ? "更新" : "作成";
 }
 
 <style>
@@ -21,39 +24,58 @@
 <body class="@bodyClass">
 @if (currentUser?.Role == "Admin")
 {
-    <div class="container text-center">
-        <h2>ブログ作成</h2>
-        <form asp-action="CreateBlogContent" method="post" enctype="multipart/form-data">
+<div class="container">
+    <div class="blog-form">
+        <h2 class="text-center mb-4">@(isEdit ? "ブログ編集" : "ブログ作成")</h2>
+        <form asp-action="@formAction" method="post" enctype="multipart/form-data">
+            @if (isEdit)
+            {
+            <input type="hidden" asp-for="Blog.Id" />
+            }
+
             <div class="form-group">
-                <label asp-for="Blog.Title" class="control-label"></label>
+                <label asp-for="Blog.Title" class="form-label">タイトル</label>
                 <input asp-for="Blog.Title" class="form-control"/>
                 <span asp-validation-for="Blog.Title" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Blog.Content" class="control-label"></label>
+                <label asp-for="Blog.Content" class="form-label">内容</label>
                 <textarea asp-for="Blog.Content" class="form-control auto-resize"></textarea>
                 <span asp-validation-for="Blog.Content" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Blog.Author" class="control-label"></label>
+                <label asp-for="Blog.Author" class="form-label">著者</label>
                 <input asp-for="Blog.Author" class="form-control"/>
                 <span asp-validation-for="Blog.Author" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label for="Image" class="control-label">Image</label>
+                <label for="Image" class="form-label">画像</label>
                 <input type="file" name="image" class="form-control"/>
+                @if (isEdit && !string.IsNullOrEmpty(Model.Blog.ImagePath))
+                {
+                <img src="@Model.Blog.ImagePath" class="preview-image" style="width: 100px; height: 100px"  alt="Current image"/>
+                }
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary"/>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-submit">@buttonText</button>
+                <a href="@Url.Action("Blog")" class="btn btn-secondary ms-2">戻る</a>
             </div>
         </form>
     </div>
+</div>
 }
 else
 {
-    <div class="container text-center">
+<div class="container text-center mt-5">
+    <div class="alert alert-warning">
         <h2>管理者権限が必要です</h2>
+        <a href="@Url.Action("Blog")" class="btn btn-primary mt-3">ブログ一覧に戻る</a>
     </div>
+</div>
 }
 </body>
 
