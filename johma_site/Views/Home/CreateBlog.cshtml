@@ -41,7 +41,84 @@
 
             <div class="form-group">
                 <label asp-for="Blog.Content" class="form-label">内容</label>
-                <textarea asp-for="Blog.Content" class="form-control auto-resize"></textarea>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<p></p>')">段落</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<h2></h2>')">見出し</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<ul><li></li></ul>')">リスト</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTagLink()">リンク</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<strong></strong>')">太字</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<em></em>')">斜体</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTagImage()">画像</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<code></code>')">コード</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<pre></pre>')">コードブロック</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<blockquote></blockquote>')">引用</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<del></del>')">取り消し線</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<ins></ins>')">下線</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<mark></mark>')">マーカー</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<sub></sub>')">下付き</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<sup></sup>')">上付き</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<small></small>')">小さい</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<big></big>')">大きい</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<abbr></abbr>')">略語</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<cite></cite>')">引用</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<dfn></dfn>')">定義</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<kbd></kbd>')">キーボード</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<samp></samp>')">サンプル</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<var></var>')">変数</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<time></time>')">時間</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<address></address>')">アドレス</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<bdi></bdi>')">逆方向のテキスト</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<bdo></bdo>')">方向付きテキスト</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<q></q>')">引用</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<span></span>')">スパン</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<div></div>')">ディブ</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<article></article>')">記事</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<aside></aside>')">サイドバー</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<footer></footer>')">フッター</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<header></header>')">ヘッダー</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<nav></nav>')">ナビゲーション</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<section></section>')">セクション</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<figure></figure>')">図</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<figcaption></figcaption>')">図の説明</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<details></details>')">詳細</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<summary></summary>')">要約</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<dialog></dialog>')">ダイアログ</button>
+                <button type="button" class="btn btn-secondary" onclick="insertTag('<menu></menu>')">メニュー</button>
+                <form asp-action="AddImage" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="Image" class="form-label">サイトに画像をアップロード</label>
+                        <input type="file" name="image" class="form-control"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary">アップロード</button>
+                </form>
+                <script>
+                    function insertTag(tag) {
+                        var textarea = document.getElementById('Blog_Content');
+                        var start = textarea.selectionStart;
+                        var end = textarea.selectionEnd;
+                        var text = textarea.value;
+                        textarea.value = text.substring(0, start) + tag + text.substring(end, text.length); 
+                        textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+                        textarea.focus();
+                    }
+                    
+                    function insertTagLink() {
+                        var url = prompt('リンク先URLを入力してください');
+                        if (url) {
+                            var tag = '<a href="' + url + '"></a>';
+                            insertTag(tag);
+                        }
+                    }
+                    
+                    function insertTagImage() {
+                        var url = prompt('の名前を入力してください');
+                        if (url) {
+                            var imagePath  = "~/images/" + url;
+                            var tag = '<img src="' + imagePath + '" alt="' + url + '"/>';
+                            insertTag(tag);
+                        }
+                    }
+                </script>
+                <textarea asp-for="Blog.Content" class="BlogText form-control auto-resize"></textarea>
                 <span asp-validation-for="Blog.Content" class="text-danger"></span>
             </div>
 

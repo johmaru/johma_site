@@ -146,6 +146,14 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
           else
                this.ModelState.AddModelError("Image", "画像を選択してください")
                this.View("ErrorView") :> ActionResult
+    
+     member this.GetBlogImage(imageName: string) : IActionResult =
+            let imagePath = Path.Combine("wwwroot/images", imageName)
+            if File.Exists(imagePath) then
+                let imageStream = new FileStream(imagePath, FileMode.Open)
+                this.File(imageStream, "image/jpeg") :> IActionResult
+            else
+               this.NotFound("ファイルが存在しません") :> IActionResult
         
     member this.BlogDetails(id: int) : ActionResult =
         let blog = db.Blogs.FirstOrDefault(fun x -> x.Id = id)

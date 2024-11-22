@@ -93,6 +93,8 @@ module Program =
              let users = db.Users.ToList()
              for user in users do
                user.Role <- "User"
+               
+               
 
         let adminUser = db.Users.Find(1)
         if not (isNull adminUser) then
