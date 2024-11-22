@@ -13,6 +13,22 @@
     <h2 class="mt-5 typewriter" data-text="開発者について">
     </h2>
     <p class="typewriter" data-text="ただのオタクです"/>
+    <h3 class="mt-3 typewriter" data-text="Zenn"></h3>
+    <a class="Zenn mt-2 typewriter" data-text="Zennを開く" href="https://zenn.dev/johmaru" target="_blank" role="button"></a>
+    <script>
+        $(document).ready(function(){
+            $(".Zenn").hover(function(){
+                $(this).css("color", "text-blue");
+            }, function(){
+                $(this).css("color", "text-twitter");
+            });
+            
+            const ZennLink = document.querySelector(".Zenn");
+            ZennLink.addEventListener("click", function(){
+                window.open("https://zenn.dev/johmaru", "_blank");
+            });
+        });
+    </script>
     <h2 class="mt-5 fade-inWelcome text-decoration-underline">
         連絡先
     </h2>
@@ -20,7 +36,7 @@
             <img id="twitter-logo" src="" alt="" width="24" style="display: none" height="24">
         </h3>
         <a class="Twitter mt-2 text-twitter typewriter" data-text="X(旧Twitter)を開く" href="https://x.com/Johmaru_gamer" target="_blank" role="button"></a>
-        <script>
+    <script>
         $(document).ready(function(){
             $(".Twitter").hover(function(){
                 $(this).css("color", "text-blue");
@@ -35,4 +51,9 @@
         });
     
             </script>
+    <h3 class="mt-3 text-blue typewriter" data-text="BlueSky">
+        
+    </h3>
+    <p class="mt-1 fade-inWelcome">プログラミング関係のことを主に書いていこうと思っています</p>
+    <a class="BlueSky mt-2 typewriter" data-text="BlueSkyを開く" href="https://bsky.app/profile/johmaru.bsky.social" target="_blank" role="button"></a>
 </Div>

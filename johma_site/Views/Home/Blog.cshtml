@@ -42,6 +42,7 @@
             <tbody>
             @foreach (var blog in Model)
             {
+                <tr>
                     <td><a href="/Home/BlogDetails/@blog.Id">@blog.Title</a></td>
                     <td>@blog.Content.StripHtmlTags()</td>
                     @if(role == "Admin")
@@ -64,7 +65,8 @@
                                 <button type="submit" class="btn btn-danger">削除</button>
                             </form>
                         </td>
-                    }
+                        }
+                </tr>
             }
             </tbody>
         </table>

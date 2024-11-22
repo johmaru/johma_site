@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "推しキャラ";
+    var theme = ViewData["Theme"] as string;
+    var bodyClass = theme == "Dark" ? "dark-mode" : "light-mode";
+}
+
+<head>
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css"/>
+</head>
+
+<body class="@bodyClass">
+    <div class="container text-center">
+        <h2 class="mt-2 text-decoration-underline">推しキャラ</h2>
+        <div class="row mt-10">
+            <div class="col-4 border-box">
+                <h2>月村手毬</h2>
+                <h3>学マス</h3>
+                <p>見た目、属性好き、面白い女</p>
+                <a href="https://gakuen.idolmaster-official.jp/idol/temari/" target="_blank">リンク</a>
+            </div>
+            <div class="col-4 border-box">
+                <h2>古美山愛</h2>
+                <h3>アイプラ</h3>
+                <p>見た目、属性好き、面白い女(面白い女好きすぎだろ)</p>
+                <a href="https://idolypride.jp/character/ai-komiyama/" target="_blank">リンク</a>
+            </div>
+            <div class="col-4 border-box">
+                <h2>天動瑠衣</h2>
+                <h3>アイプラ</h3>
+                <p>真面目でしっかりものなのに時々抜けてるの良い</p>
+                <a href="https://idolypride.jp/character/rui-tendo/" target="_blank">リンク</a>
+            </div>
+            <div class="col-4 border-box">
+                <h2>百瀬莉緒</h2>
+                <h3>ミリシタ</h3>
+                <p>見た目、属性好き、面白い女。お姉さんなのにダメダメなのに時々かっこいいのやばすぎる</p>
+                <a href="https://millionlive-anime.idolmaster-official.jp/character/rio/" target="_blank">リンク</a>
+            </div>
+            <div class="col-4 border-box">
+                <h2>ユニ</h2>
+                <h3>プリコネ</h3>
+                <p>面白い女、ストーリーも面白い。象牙の塔や文系の話など神話とかを上手く取り入れてる</p>
+                <a href="https://priconne-redive.jp/ele-wp/wp-content/themes/redive/character/67.php" target="_blank">リンク</a>
+            </div>
+        </div>
+    </div>
+</body>

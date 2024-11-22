@@ -293,7 +293,10 @@ type HomeController (logger : ILogger<HomeController>, db: ApplicationDbContext)
         this.RedirectToAction("Index")
     
                   
-
+    member this.Oshi() =
+        ThemeApply(this)
+        this.View()
+        
     [<ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)>]
     member this.Error () =
         let reqId = 

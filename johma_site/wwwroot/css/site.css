@@ -151,3 +151,13 @@ h2.mt-5.text-twitter.typewriter img {
 .nav-item:hover {
   background-color: darkgreen;
 }
+
+.mt-10 {
+  margin-top: 10rem;
+}
+
+.border-box {
+  border: 1px solid #0dcaf0;
+  padding: 10px;
+  margin: 10px;
+}
