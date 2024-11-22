@@ -1,0 +1,18 @@
+﻿FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+# EF Toolsのインストール
+RUN dotnet tool install --global dotnet-ef --version 8.0.11
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+WORKDIR /src
+COPY ["DataLibrary/DataLibrary.csproj", "DataLibrary/"]
+
+# 必要なパッケージの追加
+RUN dotnet add DataLibrary/DataLibrary.csproj package Microsoft.EntityFrameworkCore.Design --version 8.0.11
+RUN dotnet add DataLibrary/DataLibrary.csproj package Microsoft.EntityFrameworkCore.Tools --version 8.0.11
+
+COPY . .
+WORKDIR "/src/DataLibrary"
+
+# マイグレーション実行
+ENTRYPOINT ["dotnet-ef", "database", "update", "--verbose", "--context", "ApplicationDbContext"]

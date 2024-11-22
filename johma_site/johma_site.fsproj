@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,6 +30,14 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="DataLibrary\obj\DataLibrary.csproj.nuget.dgspec.json" />
       <_ContentIncludedByDefault Remove="DataLibrary\obj\project.assets.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+      <Content Include="Dockerfile" />
+      <Content Include="適応マイグレーション.txt" />
     </ItemGroup>
 
 </Project>
